@@ -2,7 +2,10 @@ package com.zn.sidesliplayout
 
 import android.content.Context
 import android.util.AttributeSet
+import android.view.MotionEvent
 import android.view.ViewGroup
+import android.view.animation.DecelerateInterpolator
+import android.view.animation.TranslateAnimation
 
 /**
  * @author zhangnan
@@ -10,6 +13,8 @@ import android.view.ViewGroup
  */
 class SideSlipMenu : ViewGroup {
 
+    var onMenuItemClickListener: OnMenuItemClickListener? = null
+    var durationTime: Long = 0
     private var isExpand = false
 
     constructor(context: Context?) : this(context, null)
@@ -18,16 +23,22 @@ class SideSlipMenu : ViewGroup {
     constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int, defStyleRes: Int) : super(context, attrs, defStyleAttr, defStyleRes)
 
     override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {
-        (0 until childCount).forEach {
-            val child = getChildAt(it)
+        (0 until childCount).forEach { position ->
+            val child = getChildAt(position)
             child.left = 0
             child.top = 0
             child.right = width
             child.bottom = height
+            child.setOnClickListener { onMenuItemClickListener?.onMenuClick(position) }
         }
     }
 
-    override fun setX(x: Float) {
+    override fun onTouchEvent(event: MotionEvent?): Boolean {
+        // todo add click listener
+        return super.onTouchEvent(event)
+    }
+
+    fun setChildX(x: Float) {
         isExpand = false
         (0 until childCount).forEach {
             val child = getChildAt(it)
@@ -41,11 +52,39 @@ class SideSlipMenu : ViewGroup {
         }
     }
 
-    fun resetX() {
+    fun close() {
         (0 until childCount).forEach { getChildAt(it).x = 0F }
+        isExpand = false
+    }
+
+    fun expand() {
+        (0 until childCount).forEach {
+            getChildAt(it).x = -(childCount - it) * width.toFloat()
+        }
+        isExpand = true
+    }
+
+    fun translationForAnimation(toExpand: Boolean) {
+        (0 until childCount).forEach {
+            val toXDelta: Float = if (toExpand) {
+                if (it == 0) 0F else (width + getChildAt(childCount - 1).x) * it
+            } else {
+                if (it == 0) 0F else getChildAt(childCount - 1).x * it
+            }
+            val backAnimation = TranslateAnimation(0F, toXDelta, 0F, 0F)
+            backAnimation.interpolator = DecelerateInterpolator()
+            backAnimation.duration = durationTime
+            getChildAt(it).startAnimation(backAnimation)
+        }
     }
 
     fun isExpand() = isExpand
 
     fun expandWidth() = width * childCount
+
+    interface OnMenuItemClickListener {
+
+        fun onMenuClick(position: Int)
+
+    }
 }

@@ -10,7 +10,7 @@
 
     <com.zn.sidesliplayout.SideSlipLayout
         android:id="@+id/ssl_test"
-        android:layout_width="200dp"
+        android:layout_width="300dp"
         android:layout_height="100dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"

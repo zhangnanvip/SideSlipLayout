@@ -3,6 +3,7 @@ package com.zn.sidesliplayout
 import android.os.Bundle
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
+import android.view.Gravity
 import android.view.View
 import android.widget.TextView
 import android.widget.Toast
@@ -14,7 +15,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         val layout = TextView(this)
-        layout.text = "hahahahahahh"
+        layout.text = "请滑动我"
+        layout.gravity = Gravity.CENTER
         layout.setTextColor(ContextCompat.getColor(this, android.R.color.white))
         layout.setBackgroundColor(ContextCompat.getColor(this, android.R.color.holo_red_dark))
         ssl_test.inflaterLayout(layout)
@@ -31,9 +33,14 @@ class MainActivity : AppCompatActivity() {
         val menus = arrayListOf<View>(menu1, menu2, menu3)
         ssl_test.inflaterMenus(menus)
 
-        ssl_test.onLayoutClickListener = object: SideSlipLayout.OnLayoutClickListener {
+        ssl_test.onLayoutClickListener = object : SideSlipLayout.OnLayoutClickListener {
             override fun onClick() {
-                Toast.makeText(this@MainActivity,"layout",Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@MainActivity, "layout", Toast.LENGTH_SHORT).show()
+            }
+        }
+        ssl_test.onMenuItemClickListener = object : SideSlipMenu.OnMenuItemClickListener {
+            override fun onMenuClick(position: Int) {
+                Toast.makeText(this@MainActivity, "$position", Toast.LENGTH_SHORT).show()
             }
         }
     }
